@@ -1,9 +1,10 @@
-from flask import Flask
-from flask import jsonify
+from flask import Flask,jsonify,render_template
 from flaskext.mysql import MySQL
+from pymysql.cursors import DictCursor
+import json
 
 app = Flask(__name__)
-mysql = MySQL()
+mysql = MySQL(cursorclass=DictCursor)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'footballproject'
@@ -14,15 +15,16 @@ conn = mysql.connect()
 cursor=conn.cursor()
 
 cursor.execute('SELECT * FROM TEST;')
-data = cursor.fetchall()
+l=list(cursor)
+print(l)
 
 @app.route('/')
 def hello_world():
-    return jsonify(data)
+    return 'Hello'
 
 @app.route('/completed')
 def completed_page():
-    return 'Completed matches'
+    return render_template('test.html',result = l)
 
 @app.route('/ongoing')
 def ongoing_page():

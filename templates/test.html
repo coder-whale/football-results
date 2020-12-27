@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/main.css') }}" >
+
+</head>
+   <body>
+      {% for row in result %}
+      <div class="match">
+        {{row.id}}{{row.sample}}
+      </div>
+      {% endfor %}
+   </body>
+</html>
