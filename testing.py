@@ -29,6 +29,10 @@ apiconn=http.client.HTTPSConnection("v3.football.api-sports.io")
 headers={'x-rapidapi-host':"v3.football.api-sports.io",'x-rapidapi-key':API_KEY}
 
 date=datetime.date.today()
+cursor.execute('SELECT * FROM fixtures_test WHERE matchdate<%s;',(date))
+finishedmatches=list(cursor)
+cursor.execute('SELECT * FROM fixtures_test WHERE matchdate>%s;',(date))
+upcomingmatches=list(cursor)
 
 @app.route('/')
 def hello_world():
@@ -36,8 +40,6 @@ def hello_world():
 
 @app.route('/completed')
 def completed_page():
-    cursor.execute('SELECT * FROM fixtures_test WHERE matchdate<%s;',(date))
-    finishedmatches=list(cursor)
     return render_template('test.html',result = finishedmatches)
 
 @app.route('/ongoing')
@@ -46,8 +48,6 @@ def ongoing_page():
 
 @app.route('/upcoming')
 def upcoming_page():
-    cursor.execute('SELECT * FROM fixtures_test WHERE matchdate>%s;',(date))
-    upcomingmatches=list(cursor)
     return render_template('test.html',result = upcomingmatches)
 
 if __name__=='__main__':

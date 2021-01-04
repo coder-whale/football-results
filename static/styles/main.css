@@ -1,3 +1,23 @@
+html{
+    height: 100%;
+background-image: linear-gradient(#e66465, #9198e5);    
+}
 div{
     color:red;
+}
+#fixture {
+  color:red;
+  background-color:white;
+  border-radius: 35px;
+  border: 2px solid #73AD21;
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 20px; 
+  width: 60%;
+  height: 20px;
+}
+#date{
+    color:blue;
+    text-align:center;
 }
