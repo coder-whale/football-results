@@ -21,3 +21,20 @@ div{
     color:blue;
     text-align:center;
 }
+#hometeam{
+    float:left;
+    color:blue;
+}
+#awayteam{
+    float:right;
+}
+#scoreline{
+    float:left;
+    display:inline-block;
+}
+#code404{
+    text-align:center;
+}
+#notfound{
+    text-align:center;
+}

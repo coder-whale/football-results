@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,render_template
+from flask import Flask,jsonify,render_template,redirect,url_for
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 import json
@@ -16,7 +16,6 @@ def update_fixtures():
     result2 = apiconn.getresponse()
     data2 = result2.read()
     matchdata = json.loads(data1.decode("utf-8"))['response'] + json.loads(data2.decode("utf-8"))['response']
-    
     sqlinsertdata =[]
     for row in matchdata:
         templist=[]
@@ -25,12 +24,14 @@ def update_fixtures():
         templist.append(33)
         templist.append(row['teams']['home']['name'])
         templist.append(row['teams']['away']['name'])
+        templist.append(row['goals']['home'])
+        templist.append(row['goals']['away'])
         templist.append(row['fixture']['status']['short'])
         templist.append(row['teams']['home']['winner'])
         temptuple=tuple(templist)
         sqlinsertdata.append(temptuple)
     
-    sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s)"
+    sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     cursor.executemany(sqlcmd,sqlinsertdata)
     conn.commit()
 
@@ -72,7 +73,7 @@ upcomingmatches=list(cursor)
 
 @app.route('/')
 def hello_world():
-    return 'Hello'
+    return redirect(url_for('upcoming_page'))
 
 @app.route('/completed')
 def completed_page():
@@ -85,6 +86,10 @@ def ongoing_page():
 @app.route('/upcoming')
 def upcoming_page():
     return render_template('test.html',result = upcomingmatches)
+    
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('pagenotfound.html')
     
 if __name__=='__main__':
     app.run()

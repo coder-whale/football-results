@@ -14,7 +14,7 @@
       {{row.matchdate}}
       </div>
       <div id="fixture">
-        {{row.hometeam}}{{row.awayteam}}{{row.result}}
+        <span id="hometeam">{{row.hometeam}}</span><span id="scoreline">{{row.hometeamgoals}}-{{row.awayteamgoals}}</span><span id="awayteam">{{row.awayteam}}</span>
       </div>
       {% endfor %}
    </body>
