@@ -28,6 +28,12 @@ div{
 #awayteam{
     float:right;
 }
+#homelogo{
+    height: 30px;
+}
+#awaylogo{
+    height: 30px;
+}
 #scoreline{
     float:left;
     display:inline-block;

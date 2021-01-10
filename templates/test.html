@@ -11,10 +11,22 @@
       <a href=upcoming><button type="button">Upcoming matches</button></a>
       {% for row in result %}
       <div id="date">
-      {{row.matchdate}}
+      {{row.day}}
       </div>
       <div id="fixture">
-        <span id="hometeam">{{row.hometeam}}</span><span id="scoreline">{{row.hometeamgoals}}-{{row.awayteamgoals}}</span><span id="awayteam">{{row.awayteam}}</span>
+        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
+        <span id="hometeam">{{row.hometeam}}</span>
+        <span id="scoreline">
+        {% if row.status == "FT" %}
+        {{row.hometeamgoals}}-{{row.awayteamgoals}}
+        {% elif row.status == "TBD" %}
+        TBD
+        {% else %}
+        {{row.time}}
+        {% endif %}
+        </span>
+        <span id="awayteam">{{row.awayteam}}</span>
+        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} id="awaylogo" alt="away" ></span>
       </div>
       {% endfor %}
    </body>

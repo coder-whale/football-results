@@ -5,24 +5,29 @@ import json
 import http.client
 import os
 import datetime
+import time
 
 def update_fixtures():
     cursor.execute('DELETE FROM fixtures_test')
     conn.commit()
-    apiconn.request("GET","/fixtures?league=39&team=33&last=5",headers=headers)
+    apiconn.request("GET","/fixtures?league=140&team=529&last=5",headers=headers)
     result1 = apiconn.getresponse()
     data1 = result1.read()
-    apiconn.request("GET","/fixtures?league=39&team=33&next=5",headers=headers)
+    apiconn.request("GET","/fixtures?league=140&team=529&next=5",headers=headers)
     result2 = apiconn.getresponse()
     data2 = result2.read()
     matchdata = json.loads(data1.decode("utf-8"))['response'] + json.loads(data2.decode("utf-8"))['response']
     sqlinsertdata =[]
+    #print(matchdata)
     for row in matchdata:
         templist=[]
         templist.append(row['fixture']['id'])
-        templist.append(row['fixture']['date'][:10])
+        templist.append(row['fixture']['date'])
+        templist.append(row['fixture']['timestamp'])
         templist.append(33)
+        templist.append(row['teams']['home']['id'])
         templist.append(row['teams']['home']['name'])
+        templist.append(row['teams']['away']['id'])
         templist.append(row['teams']['away']['name'])
         templist.append(row['goals']['home'])
         templist.append(row['goals']['away'])
@@ -31,7 +36,7 @@ def update_fixtures():
         temptuple=tuple(templist)
         sqlinsertdata.append(temptuple)
     
-    sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     cursor.executemany(sqlcmd,sqlinsertdata)
     conn.commit()
 
@@ -70,6 +75,18 @@ cursor.execute('SELECT * FROM fixtures_test WHERE matchdate<%s;',(date))
 finishedmatches=list(cursor)
 cursor.execute('SELECT * FROM fixtures_test WHERE matchdate>%s;',(date))
 upcomingmatches=list(cursor)
+
+for row in finishedmatches:
+    temp=row['timestamp']
+    tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
+    row['day']=tempdate.strftime('%a %d %b')
+    row['time']=tempdate.strftime('%H:%M')
+
+for row in upcomingmatches:
+    temp=row['timestamp']
+    tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
+    row['day']=tempdate.strftime('%a %d %b')
+    row['time']=tempdate.strftime('%H:%M')
 
 @app.route('/')
 def hello_world():
