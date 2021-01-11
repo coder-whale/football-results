@@ -28,14 +28,15 @@ cursor=conn.cursor()
 apiconn=http.client.HTTPSConnection("v3.football.api-sports.io")
 headers={'x-rapidapi-host':"v3.football.api-sports.io",'x-rapidapi-key':API_KEY}
 
-apiconn.request("GET","/fixtures?league=39&team=33&last=5",headers=headers)
+apiconn.request("GET","/fixtures?team=33&last=5",headers=headers)
 result1 = apiconn.getresponse()
 data1 = result1.read()
-apiconn.request("GET","/fixtures?league=39&team=33&next=5",headers=headers)
+apiconn.request("GET","/fixtures?team=33&next=5",headers=headers)
 result2 = apiconn.getresponse()
 data2 = result2.read()
 
 matchdata = json.loads(data1.decode("utf-8"))['response'] + json.loads(data2.decode("utf-8"))['response']
+print(matchdata)
 
 sqlinsertdata =[]
 for row in matchdata:
@@ -51,9 +52,9 @@ for row in matchdata:
     print(temptuple)
     sqlinsertdata.append(temptuple)
 
-sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s)"
-cursor.executemany(sqlcmd,sqlinsertdata)
-conn.commit()
+#sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s)"
+#cursor.executemany(sqlcmd,sqlinsertdata)
+#conn.commit()
 
 if __name__=='__main__':
     app.run()

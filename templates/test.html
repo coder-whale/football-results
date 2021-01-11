@@ -7,9 +7,12 @@
 
 </head>
    <body>
+      {% for team in teams %}
+      <a href=completed?teamid={{team.id}}><button type="button">{{team.name}}</button></a>
+      {% endfor %}
       <a href=completed><button type="button">Completed matches</button></a>
       <a href=upcoming><button type="button">Upcoming matches</button></a>
-      {% for row in result %}
+      {% for row in fixtures %}
       <div id="date">
       {{row.day}}
       </div>
