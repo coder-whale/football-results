@@ -100,6 +100,10 @@ finishedmatches=[]
 upcomingmatches=[]
 get_fixtures(currentteam)
 
+#Get data of all available teams
+cursor.execute('SELECT * FROM teams;')
+allteams=list(cursor)
+
 @app.route('/')
 def hello_world():
     return redirect(url_for('upcoming_page'))
@@ -126,6 +130,10 @@ def upcoming_page():
         currentteam=tempid
     return render_template('test.html',fixtures = upcomingmatches,teams=teamlist)
     
+@app.route('/edit_teams')
+def edit_teams_page():
+    return render_template('edit_teams.html',allteams=json.dumps(allteams),teams=teamlist)
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template('pagenotfound.html')

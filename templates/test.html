@@ -10,6 +10,7 @@
       {% for team in teams %}
       <a href=completed?teamid={{team.id}}><button type="button">{{team.name}}</button></a>
       {% endfor %}
+      <a href=edit_teams><button type="button">Edit teams</button></a>
       <a href=completed><button type="button">Completed matches</button></a>
       <a href=upcoming><button type="button">Upcoming matches</button></a>
       {% for row in fixtures %}
@@ -20,7 +21,7 @@
         <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
         <span id="hometeam">{{row.hometeam}}</span>
         <span id="scoreline">
-        {% if row.status == "FT" %}
+        {% if row.status == "FT" or row.status == "PEN" or row.status == "AET"%}
         {{row.hometeamgoals}}-{{row.awayteamgoals}}
         {% elif row.status == "TBD" %}
         TBD
