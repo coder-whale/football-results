@@ -7,12 +7,31 @@
 
 </head>
    <body>
+      <div id="teambar">
+      </div>
       <input type="text" id="searchbar" onkeyup="searchteams()" placeholder="Search for teams">
       <ul id="teamlist">
       </ul>
       <script>
+      function addteam(team){
+      var divnode = document.createElement("div");                 
+      var textnode = document.createTextNode(team['name']);         // Create a text node
+      divnode.appendChild(textnode);                              // Append the text to <li>
+      var spannode = document.createElement("span"); 
+      spannode.className = "close";
+      var spantextnode = document.createTextNode('x'); 
+      spannode.appendChild(spantextnode);
+      divnode.appendChild(spannode);
+      document.getElementById("teambar").appendChild(divnode);
+      }
+      var barteams={{ teams|safe }};
+      console.log(barteams);
+      for (i = 0; i < barteams.length ; i++)
+      {
+      addteam(barteams[i]);
+      }
       var v = {{ allteams|safe }};
-function searchteams() {
+    function searchteams() {
     var input, filter, ul, li, a, i, txtValue;
     input = document.getElementById("searchbar");
     filter = input.value.toUpperCase();
@@ -23,16 +42,49 @@ function searchteams() {
     li[i].remove();
     for (i = 0; i < v.length && count<8; i++) {
         a = v[i].teamname;
-        console.log(a);
         if (a.toUpperCase().indexOf(filter) > -1) {
             var node = document.createElement("LI");                 // Create a <li> node
+            node.setAttribute("id", v[i].teamid);
             var textnode = document.createTextNode(a);         // Create a text node
             node.appendChild(textnode);                              // Append the text to <li>
+            let tempnode=node;
+            tempnode.onclick = function () {
+            var newteam = {'id':tempnode.id,'name':tempnode.childNodes[0].nodeValue};
+            console.log(newteam);
+            addteam(newteam);
+            barteams.push(newteam);
+            };
             document.getElementById("teamlist").appendChild(node);     // Append <li> to <ul> with id="myList"
             count++;
         } 
     }
 }
+function submit_teams()
+{
+fetch(`${window.origin}/edit_teams/make_changes`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(barteams),
+    cache: "no-cache",
+    headers: new Headers({
+      "content-type": "application/json"
+    })
+  })
+  .then(function(response) {
+    if (response.status !== 200) {
+      console.log(`Looks like there was a problem. Status code: ${response.status}`);
+      return;
+    }
+    response.json().then(function(data) {
+      console.log(data);
+    });
+  })
+  .catch(function(error) {
+    console.log("Fetch error: " + error);
+});
+}
 </script>
+<button id="submit" onclick="submit_teams()">Submit</button>
+
    </body>
 </html>

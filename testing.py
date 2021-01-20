@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,render_template,redirect,url_for,request
+from flask import Flask,jsonify,render_template,redirect,url_for,request,make_response
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 import json
@@ -132,11 +132,27 @@ def upcoming_page():
     
 @app.route('/edit_teams')
 def edit_teams_page():
-    return render_template('edit_teams.html',allteams=json.dumps(allteams),teams=teamlist)
+    newteamlist = request.get_json()
+    return render_template('edit_teams.html',allteams=json.dumps(allteams),teams=json.dumps(teamlist))
+    
+@app.route('/edit_teams/make_changes', methods=['POST'])
+def make_changes():
+    req = request.get_json()
+    print(req)
+    with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
+        data=json.load(f)
+        data['teams']=req
+        f.seek(0)
+        json.dump(data,f)
+        f.truncate()
+    res = make_response(jsonify({"message": "OK"}), 200)
+    teamlist=req
+    redirect(url_for('upcoming_page'))
 
 @app.errorhandler(404)
 def not_found(e):
     return render_template('pagenotfound.html')
     
 if __name__=='__main__':
+    app.debug=True
     app.run()
