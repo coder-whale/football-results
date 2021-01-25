@@ -1,1 +1,1 @@
-{"lastUpdated": "2021-01-21", "countries": ["england", "spain", "germany", "italy", "france"], "teams": [{"id": 33, "name": "Manchester United"}, {"id": 529, "name": "Barcelona"}, {"id": "47", "name": "Tottenham"}]}
+{"lastUpdated": "2021-01-26", "countries": ["england", "spain", "germany", "italy", "france"], "ids": ["33", "40"], "teams": [{"id": "33", "name": "Manchester United"}, {"id": "40", "name": "Liverpool"}]}

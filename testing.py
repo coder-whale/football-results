@@ -34,15 +34,15 @@ def update_fixtures(teamid):
         temptuple=tuple(templist)
         sqlinsertdata.append(temptuple)
     
-    sqlcmd="INSERT INTO fixtures_test VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sqlcmd="INSERT INTO fixtures(fixtureid,matchdate,timestamp,teamid,homeid,hometeam,awayid,awayteam,hometeamgoals,awayteamgoals,status,result) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     cursor.executemany(sqlcmd,sqlinsertdata)
     conn.commit()
 
 def get_fixtures(idparam):
     global finishedmatches,upcomingmatches
-    cursor.execute('SELECT * FROM fixtures_test WHERE matchdate<%s AND teamid=%s ORDER BY timestamp DESC;',(date,idparam))
+    cursor.execute('SELECT * FROM fixtures WHERE matchdate<%s AND teamid=%s ORDER BY timestamp DESC;',(date,idparam))
     finishedmatches=list(cursor)
-    cursor.execute('SELECT * FROM fixtures_test WHERE matchdate>%s AND teamid=%s ORDER BY timestamp;',(date,idparam))
+    cursor.execute('SELECT * FROM fixtures WHERE matchdate>%s AND teamid=%s ORDER BY timestamp;',(date,idparam))
     upcomingmatches=list(cursor)
     
     for row in finishedmatches:
@@ -86,7 +86,7 @@ with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
     data=json.load(f)
     teamlist=data['teams']
     if data['lastUpdated']!=str(date):
-        cursor.execute('DELETE FROM fixtures_test')
+        cursor.execute('DELETE FROM fixtures')
         conn.commit()
         for team in teamlist:
             teamid=team['id']
@@ -132,22 +132,27 @@ def upcoming_page():
     
 @app.route('/edit_teams')
 def edit_teams_page():
-    newteamlist = request.get_json()
     return render_template('edit_teams.html',allteams=json.dumps(allteams),teams=json.dumps(teamlist))
     
 @app.route('/edit_teams/make_changes', methods=['POST'])
 def make_changes():
+    global teamlist
     req = request.get_json()
-    print(req)
+    res = make_response(jsonify({"message": "OK"}), 200)
+    teamlist=req
     with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
         data=json.load(f)
         data['teams']=req
+        teamids=data['ids']
+        data['ids']=[]
+        for team in teamlist:
+            data['ids'].append(team['id'])
+            if str(team['id']) not in teamids:
+                update_fixtures(team['id'])
         f.seek(0)
         json.dump(data,f)
         f.truncate()
-    res = make_response(jsonify({"message": "OK"}), 200)
-    teamlist=req
-    redirect(url_for('upcoming_page'))
+    return res
 
 @app.errorhandler(404)
 def not_found(e):

@@ -35,7 +35,7 @@ for country in countries:
     result1 = apiconn.getresponse()
     data1 = result1.read()
 
-    team_data = json.loads(data1.decode("utf-8"))['response'] 
+    team_data = json.loads(data1.decode("utf-8"))['response']
     #print(team_data)
     
     sqlinsertdata =[]
