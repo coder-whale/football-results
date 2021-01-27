@@ -7,20 +7,6 @@
 
 </head>
    <body>
-   <script>
-   function findpage(ele)
-   {
-   console.log(ele.id);
-    if(window.location.href.includes('completed'))
-    window.location.href = "http://127.0.0.1:5000/completed?teamid="+ele.id;
-    else
-    window.location.href = "http://127.0.0.1:5000/upcoming?teamid="+ele.id;
-   }
-   </script>
-   
-      {% for team in teams %}
-      <button type="button" onclick=findpage(this) id={{team.id}}>{{team.name}}</button>
-      {% endfor %}
       <a href=edit_teams><button type="button">Edit teams</button></a>
       <a href=completed><button type="button">Completed matches</button></a>
       <a href=upcoming><button type="button">Upcoming matches</button></a>

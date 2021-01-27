@@ -16,7 +16,7 @@ def update_fixtures(teamid):
     data2 = result2.read()
     matchdata = json.loads(data1.decode("utf-8"))['response'] + json.loads(data2.decode("utf-8"))['response']
     sqlinsertdata =[]
-    #print(matchdata)
+    print(matchdata)
     for row in matchdata:
         templist=[]
         templist.append(row['fixture']['id'])
@@ -38,12 +38,20 @@ def update_fixtures(teamid):
     cursor.executemany(sqlcmd,sqlinsertdata)
     conn.commit()
 
+curctime=time.ctime()
+def update_time():
+    global curctime
+    curctime=time.time()
+
 def get_fixtures(idparam):
-    global finishedmatches,upcomingmatches
-    cursor.execute('SELECT * FROM fixtures WHERE matchdate<%s AND teamid=%s ORDER BY timestamp DESC;',(date,idparam))
+    update_time()
+    global finishedmatches,upcomingmatches,ongoingmatches
+    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status=\'FT\' ORDER BY timestamp DESC;',(curctime,idparam))
     finishedmatches=list(cursor)
-    cursor.execute('SELECT * FROM fixtures WHERE matchdate>%s AND teamid=%s ORDER BY timestamp;',(date,idparam))
+    cursor.execute('SELECT * FROM fixtures WHERE timestamp>%s AND teamid=%s ORDER BY timestamp;',(curctime,idparam))
     upcomingmatches=list(cursor)
+    cursor.execute('SELECT * FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
+    ongoingmatches=list(cursor)
     
     for row in finishedmatches:
         temp=row['timestamp']
@@ -119,7 +127,7 @@ def completed_page():
 
 @app.route('/ongoing')
 def ongoing_page():
-    return 'Hello world'
+    return render_template('ongoing.html',fixtures = ongoingmatches,teams=teamlist)
 
 @app.route('/upcoming')
 def upcoming_page():
