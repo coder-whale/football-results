@@ -8,7 +8,7 @@ import datetime
 import time
 
 def update_fixtures(teamid):
-    apiconn.request("GET","/fixtures?team="+str(teamid)+"&last=5",headers=headers)
+    apiconn.request("GET","/fixtures?team="+str(teamid)+"&last=6",headers=headers)
     result1 = apiconn.getresponse()
     data1 = result1.read()
     apiconn.request("GET","/fixtures?team="+str(teamid)+"&next=5",headers=headers)
@@ -16,7 +16,6 @@ def update_fixtures(teamid):
     data2 = result2.read()
     matchdata = json.loads(data1.decode("utf-8"))['response'] + json.loads(data2.decode("utf-8"))['response']
     sqlinsertdata =[]
-    print(matchdata)
     for row in matchdata:
         templist=[]
         templist.append(row['fixture']['id'])
@@ -45,14 +44,11 @@ def update_time():
 
 def get_fixtures(idparam):
     update_time()
-    global finishedmatches,upcomingmatches,ongoingmatches
-    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status=\'FT\' ORDER BY timestamp DESC;',(curctime,idparam))
+    global finishedmatches,upcomingmatches
+    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status=\'FT\' ORDER BY timestamp DESC limit 5;',(curctime,idparam))
     finishedmatches=list(cursor)
     cursor.execute('SELECT * FROM fixtures WHERE timestamp>%s AND teamid=%s ORDER BY timestamp;',(curctime,idparam))
     upcomingmatches=list(cursor)
-    cursor.execute('SELECT * FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
-    ongoingmatches=list(cursor)
-    
     for row in finishedmatches:
         temp=row['timestamp']
         tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
@@ -64,6 +60,41 @@ def get_fixtures(idparam):
         tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
         row['day']=tempdate.strftime('%a %d %b')
         row['time']=tempdate.strftime('%H:%M')
+    live_fixtures()
+    
+def live_fixtures():
+    update_time()
+    global ongoingmatches
+    cursor.execute('SELECT fixtureid FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
+    ongoingids=list(cursor)
+    ongoingset=set([d['fixtureid'] for d in ongoingids])
+    if(len(ongoingset)>0):
+        apiconn.request("GET","/fixtures?live=all",headers=headers)
+        result3 = apiconn.getresponse()
+        data3 = result3.read()
+        matchdata3 = json.loads(data3.decode("utf-8"))['response']
+        for row in matchdata3:
+            if(row['fixture']['id'] in ongoingset):
+                goalshome=row['goals']['home']
+                goalsaway=row['goals']['away']
+                minutes=row['fixture']['status']['elapsed']
+                status=row['fixture']['status']['short']
+                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,minutes=%s,status=%s where fixtureid=%s;",(goalshome,goalsaway,minutes,status,row['fixture']['id']))
+                conn.commit()
+                ongoingset.remove(row['fixture']['id'])
+        for s in ongoingset:
+            apiconn.request("GET","/fixtures?id="+str(s),headers=headers)
+            resultfin = apiconn.getresponse()
+            datafin = resultfin.read()
+            matchdatafin = json.loads(datafin.decode("utf-8"))['response']
+            for row in matchdatafin:
+                goalshome=row['goals']['home']
+                goalsaway=row['goals']['away']
+                status=row['fixture']['status']['short']
+                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,status=%s where fixtureid=%s;",(goalshome,goalsaway,status,row['fixture']['id']))
+                conn.commit()
+    cursor.execute('SELECT * FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
+    ongoingmatches=list(cursor)       
     
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
@@ -89,10 +120,12 @@ headers={'x-rapidapi-host':"v3.football.api-sports.io",'x-rapidapi-key':API_KEY}
 
 date=datetime.date.today()
 teamlist=[]
+teamids=[]
 currentteam=-1
 with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
     data=json.load(f)
     teamlist=data['teams']
+    teamids=data['ids']
     if data['lastUpdated']!=str(date):
         cursor.execute('DELETE FROM fixtures')
         conn.commit()
@@ -127,6 +160,7 @@ def completed_page():
 
 @app.route('/ongoing')
 def ongoing_page():
+    live_fixtures()
     return render_template('ongoing.html',fixtures = ongoingmatches,teams=teamlist)
 
 @app.route('/upcoming')
@@ -134,8 +168,16 @@ def upcoming_page():
     global currentteam
     tempid=request.args.get('teamid')
     if tempid is not None and tempid != currentteam:
-        get_fixtures(tempid)
-        currentteam=tempid
+        if str(tempid) in teamids:
+            get_fixtures(tempid)
+            currentteam=tempid
+        else:
+            currentteam=teamlist[0]['id']
+            get_fixtures(currentteam)
+    if tempid is None:
+        if str(currentteam) not in teamids:
+            currentteam=teamlist[0]['id']
+            get_fixtures(currentteam)
     return render_template('test.html',fixtures = upcomingmatches,teams=teamlist)
     
 @app.route('/edit_teams')
@@ -144,9 +186,13 @@ def edit_teams_page():
     
 @app.route('/edit_teams/make_changes', methods=['POST'])
 def make_changes():
-    global teamlist
+    global teamlist,teamids
     req = request.get_json()
     res = make_response(jsonify({"message": "OK"}), 200)
+    for tempteam in teamlist:
+        if tempteam not in req:
+            cursor.execute("DELETE FROM fixtures WHERE teamid=%s;",(tempteam['id']))
+            conn.commit()
     teamlist=req
     with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
         data=json.load(f)
@@ -158,6 +204,7 @@ def make_changes():
             if str(team['id']) not in teamids:
                 update_fixtures(team['id'])
         f.seek(0)
+        teamids=data['ids']
         json.dump(data,f)
         f.truncate()
     return res

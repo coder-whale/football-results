@@ -12,20 +12,12 @@
       <a href=upcoming><button type="button">Upcoming matches</button></a>
       <a href=ongoing><button type="button">Ongoing matches</button></a>
       {% for row in fixtures %}
-      <div id="date">
-      {{row.day}}
-      </div>
       <div id="fixture">
         <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
         <span id="hometeam">{{row.hometeam}}</span>
         <span id="scoreline">
-        {% if row.status == "FT" or row.status == "PEN" or row.status == "AET"%}
         {{row.hometeamgoals}}-{{row.awayteamgoals}}
-        {% elif row.status == "TBD" %}
-        TBD
-        {% else %}
-        {{row.time}}
-        {% endif %}
+        {{row.minutes}}
         </span>
         <span id="awayteam">{{row.awayteam}}</span>
         <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} id="awaylogo" alt="away" ></span>
