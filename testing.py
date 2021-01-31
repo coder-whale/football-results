@@ -60,7 +60,7 @@ def get_fixtures(idparam):
         tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
         row['day']=tempdate.strftime('%a %d %b')
         row['time']=tempdate.strftime('%H:%M')
-    live_fixtures()
+    #live_fixtures()
     
 def live_fixtures():
     update_time()

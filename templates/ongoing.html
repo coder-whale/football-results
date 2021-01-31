@@ -13,14 +13,14 @@
       <a href=ongoing><button type="button">Ongoing matches</button></a>
       {% for row in fixtures %}
       <div id="fixture">
-        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
         <span id="hometeam">{{row.hometeam}}</span>
+        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
         <span id="scoreline">
         {{row.hometeamgoals}}-{{row.awayteamgoals}}
         {{row.minutes}}
         </span>
-        <span id="awayteam">{{row.awayteam}}</span>
         <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} id="awaylogo" alt="away" ></span>
+        <span id="awayteam">{{row.awayteam}}</span>
       </div>
       {% endfor %}
    </body>

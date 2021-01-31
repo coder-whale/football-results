@@ -5,13 +5,14 @@ background-image: linear-gradient(#e66465, #9198e5);
 
 #fixture {
   color:red;
+  display: table;
   background-color:white;
   border-radius: 35px;
   border: 2px solid #73AD21;
   margin: auto;
   margin-bottom: 10px;
   margin-top: 10px;
-  padding: 20px; 
+  padding: 15px; 
   width: 60%;
   height: 20px;
 }
@@ -44,27 +45,62 @@ background-image: linear-gradient(#e66465, #9198e5);
     text-align:center;
 }
 #hometeam{
-    float:left;
+    vertical-align: middle;
+    display: table-cell;
+    padding: 6px; 
     color:blue;
+    float:left;
 }
 #awayteam{
-    float:right;
+    vertical-align: middle;
+    display: table-cell;
+    float: right;
 }
 #homelogo{
     height: 30px;
+    display: table-cell;
+    float:left;
 }
 #awaylogo{
     height: 30px;
+    display: table-cell;
+    float: right;
+    padding-right:6px;
 }
 #scoreline{
-    float:left;
-    display:inline-block;
+    vertical-align: middle;
+    display: table-cell;
+    margin: auto;
 }
 #code404{
     text-align:center;
 }
 #notfound{
     text-align:center;
+}
+#teambar{
+    margin: -10px;
+}
+.teambutton{
+  cursor: default;
+  display: table;
+  border-radius: 30px;
+  height : 25px;
+  border: 2px solid #73AD21;
+  padding: 6px; 
+  margin: 10px;
+}
+.teambutton:hover{
+    color:#329dc7;
+}
+.teamlogo{
+  vertical-align: middle;
+  display: table-cell;
+}
+.teambuttonspan {
+  vertical-align: middle;
+  display: table-cell;
+   padding-left: 5px;
 }
 .body404{
     height: 100%;
