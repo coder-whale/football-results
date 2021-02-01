@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-
+<title>Football fixtures</title>
 <head>
 
   <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/main.css') }}" >
@@ -17,6 +17,12 @@
     window.location.href = "http://127.0.0.1:5000/upcoming?teamid="+ele.id;
    }
    </script>
+       <ul id="optionbar">
+      <li class="option" style="width:30%"><a href=completed class="optionlink">Completed matches</a></li>
+      <li class="option" style="width:30%"><a href=ongoing  class="optionlink">Ongoing matches</a></li>
+      <li class="option" style="width:30%"><a href=upcoming class="optionlink">Upcoming matches</a></li>
+      <li class="option" style="width:10%"><a href=edit_teams class="optionlink">Edit teams</a></li>
+      </ul>
        <div id="teambar">
       {% for team in teams %}
       <div onclick=findpage(this) id={{team.id}} class="teambutton">
@@ -25,18 +31,17 @@
       </div>
       {% endfor %}
       </div>
-      <a href=edit_teams><button type="button">Edit teams</button></a>
-      <a href=completed><button type="button">Completed matches</button></a>
-      <a href=upcoming><button type="button">Upcoming matches</button></a>
-      <a href=ongoing><button type="button">Ongoing matches</button></a>
+      <div id="allfixtures">
       {% for row in fixtures %}
-      <div id="date">
+      <div class="date">
       {{row.day}}
       </div>
-      <div id="fixture">
-        <span id="hometeam">{{row.hometeam}}</span>
-        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} id="homelogo" alt="home" ></span>
-        <span id="scoreline">
+      <div class="fixture">
+      <div class="homeside">
+        <span class="homesidespan">{{row.hometeam}}</span>
+        <span class="homesidespan"><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} class="homelogo" alt="home" ></span>
+        </div>
+        <span class="scoreline">
         {% if row.status == "FT" or row.status == "PEN" or row.status == "AET"%}
         {{row.hometeamgoals}}-{{row.awayteamgoals}}
         {% elif row.status == "TBD" %}
@@ -45,9 +50,12 @@
         {{row.time}}
         {% endif %}
         </span>
-        <span><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} id="awaylogo" alt="away" ></span>
-        <span id="awayteam">{{row.awayteam}}</span>
+        <div class="awayside">
+        <span class="awaysidespan"><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} class="awaylogo" alt="away" ></span>
+        <span class="awaysidespan">{{row.awayteam}}</span>
+        </div>
       </div>
       {% endfor %}
+      </div>
    </body>
 </html>

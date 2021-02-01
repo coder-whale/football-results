@@ -3,7 +3,7 @@ html{
 background-image: linear-gradient(#e66465, #9198e5);    
 }
 
-#fixture {
+.fixture {
   color:red;
   display: table;
   background-color:white;
@@ -30,7 +30,7 @@ background-image: linear-gradient(#e66465, #9198e5);
   padding: 0;
   margin: 0;
 }
-#teamlist li {
+#teamlist .listclass {
   border: 1px solid #ddd; /* Add a border to all links */
   margin-top: -1px; /* Prevent double borders */
   background-color: #f6f6f6; /* Grey background color */
@@ -40,37 +40,47 @@ background-image: linear-gradient(#e66465, #9198e5);
   color: black; /* Add a black text color */
   display: block; /* Make it into a block element to fill the whole list */
 }
-#date{
+.homeside{
+    display: table-cell;
+    width:40%
+}
+.awayside{
+    display: table-cell;
+    float: right;
+}
+.date{
     color:blue;
     text-align:center;
 }
-#hometeam{
+.hometeam{
     vertical-align: middle;
     display: table-cell;
     padding: 6px; 
     color:blue;
     float:left;
 }
-#awayteam{
+.awayteam{
     vertical-align: middle;
     display: table-cell;
     float: right;
 }
-#homelogo{
+.homelogo{
     height: 30px;
     display: table-cell;
     float:left;
 }
-#awaylogo{
+.awaylogo{
     height: 30px;
     display: table-cell;
     float: right;
     padding-right:6px;
 }
-#scoreline{
+.scoreline{
     vertical-align: middle;
     display: table-cell;
     margin: auto;
+    text-align: center;
+    width: 20%;
 }
 #code404{
     text-align:center;
@@ -78,23 +88,72 @@ background-image: linear-gradient(#e66465, #9198e5);
 #notfound{
     text-align:center;
 }
+
+#optionbar{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  height: 40px;
+  position: fixed;
+  width:100%;
+  left:0;
+  top: 0;
+}
+#allfixtures{
+    position: absolute;
+    top: 100px;
+    width: 100%;
+}
+.option{
+    float:left;
+    text-align:center;
+    vertical-align: middle;
+}
+.option .optionlink{
+    display: block;
+  color: white;
+  text-align: center;
+   vertical-align: middle;
+  padding: 15px 5px;
+  text-decoration: none;
+}
+.option .optionlink:hover {
+  background-color: #111;
+}
 #teambar{
-    margin: -10px;
+    display: table;
+    border-collapse: separate;
+    border-spacing: 5px;
+    position: absolute;
+    top: 55px;
 }
 .teambutton{
+  background-color:#25275e;
+   color:white;
   cursor: default;
-  display: table;
+  display: table-cell;
   border-radius: 30px;
   height : 25px;
   border: 2px solid #73AD21;
-  padding: 6px; 
-  margin: 10px;
+  padding: 6px;
+  margin-right: 40px;
 }
 .teambutton:hover{
     color:#329dc7;
 }
-.teamlogo{
+.teamlogo .homelogo .awaylogo{
   vertical-align: middle;
+  display: table-cell;
+}
+.homesidespan{
+    padding-left: 5px;
+    vertical-align: middle;
+  display: table-cell;
+}
+.awaysidespan{
+    vertical-align: middle;
   display: table-cell;
 }
 .teambuttonspan {
