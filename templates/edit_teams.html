@@ -2,7 +2,8 @@
 <html>
 <title>Football fixtures</title>
 <head>
-
+<link rel="preconnect" href="https://fonts.gstatic.com">
+   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/main.css') }}" >
 
 </head>
@@ -15,25 +16,44 @@
       </ul>
       <div id="teambar"></div>
       <input type="text" id="searchbar" onkeyup="searchteams()" placeholder="Search for teams">
+      <button id="submit" onclick="submit_teams()">Apply</button>
       <ul id="teamlist"></ul>
       <script>
       function addteam(team)
       {
         var divnode = document.createElement("div");
         divnode.setAttribute("id", team['id']);
+        divnode.className = "teambutton2";
         teamids.add(team['id']);
-        var textnode = document.createTextNode(team["name"]);         // Create a text node
-        divnode.appendChild(textnode);                              // Append the text to <li>
-        var spannode = document.createElement("span"); 
-        spannode.className = "close";
-        var spantextnode = document.createTextNode("x"); 
-        spannode.appendChild(spantextnode);
-        let tempspannode=spannode;
+        var spannodetext = document.createElement("span"); 
+        spannodetext.className = "teambuttonspan";
+        var textnode1 = document.createTextNode(team["name"]);         // Create a text node
+        spannodetext.appendChild(textnode1);                              // Append the text to <li>
+        var spannodeimg = document.createElement("span"); 
+        spannodeimg.className = "teambuttonspan";
+        var img = document.createElement('img'); 
+        img.src = 'https://media.api-sports.io/football/teams/'+team["id"]+'.png'; 
+        img.height="30";
+        spannodeimg.appendChild(img);
+        var spannodeclose = document.createElement("span"); 
+        spannodeclose.className = "teambuttonspan";
+        spannodeclose.className += " closebutton";
+        spannodeclose.onmouseover = 
+        function() { 
+         divnode.style.color = "#eb3434";
+        };
+        spannodeclose.onmouseout = 
+        function() { 
+         divnode.style.color = "white";
+        };
+        let tempspannode=spannodeclose;
         tempspannode.onclick = function () {
             teamids.delete(team["id"]);
             tempspannode.parentNode.parentNode.removeChild(tempspannode.parentNode);
             };
-        divnode.appendChild(spannode);
+        divnode.appendChild(spannodetext);
+        divnode.appendChild(spannodeimg);
+        divnode.appendChild(spannodeclose);
         document.getElementById("teambar").appendChild(divnode);
       }
       
@@ -76,6 +96,7 @@
                     addteam(newteam);
                 }
                 };
+                if(filter.length>0)
                 document.getElementById("teamlist").appendChild(node);     // Append <li> to <ul> with id="myList"
                 count++;
             } 
@@ -115,6 +136,5 @@
         });
       }
 </script>
-<button id="submit" onclick="submit_teams()">Done</button>
    </body>
 </html>
