@@ -45,7 +45,7 @@ def update_time():
 def get_fixtures(idparam):
     update_time()
     global finishedmatches,upcomingmatches
-    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status=\'FT\' ORDER BY timestamp DESC limit 5;',(curctime,idparam))
+    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status IN (\'FT\',\'AET\') ORDER BY timestamp DESC limit 5;',(curctime,idparam))
     finishedmatches=list(cursor)
     cursor.execute('SELECT * FROM fixtures WHERE timestamp>%s AND teamid=%s ORDER BY timestamp;',(curctime,idparam))
     upcomingmatches=list(cursor)

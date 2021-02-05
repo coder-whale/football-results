@@ -7,13 +7,17 @@
   <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/main.css') }}" >
 
 </head>
-   <body class="body404">
-   <div class="div404">
+   <body>
+   <ul id="optionbar">
+      <li class="option" style="width:30%"><a href=completed class="optionlink">Completed matches</a></li>
+      <li class="option" style="width:30%"><a href=ongoing  class="optionlink">Ongoing matches</a></li>
+      <li class="option" style="width:30%"><a href=upcoming class="optionlink">Upcoming matches</a></li>
+      <li class="option" style="width:10%"><a href=edit_teams class="optionlink">Edit teams</a></li>
+      </ul>
       <div class="middle">
       <h1>404</h1>
       <hr>
       <p>Page not found. <a href=upcoming>Return to home</a></p>
       </div>
-   </div>
    </body>
 </html>

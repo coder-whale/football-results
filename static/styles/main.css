@@ -138,7 +138,7 @@ overflow: hidden;
     position: absolute;
     top: 55px;
 }
-.teambutton, .teambutton2 {
+.teambutton {
   background-color:#25275e;
    color:white;
   cursor: pointer;
@@ -149,8 +149,19 @@ overflow: hidden;
   padding: 6px;
   margin-right: 40px;
 }
+.teambutton2{
+    background-color:#25275e;
+   color:white;
+  display: table-cell;
+  border-radius: 30px;
+  height : 25px;
+  border: 2px solid #73AD21;
+  padding: 6px;
+  margin-right: 40px;
+}
 .closebutton{
-    font-size: 14px;       
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .closebutton:before {
@@ -181,15 +192,12 @@ overflow: hidden;
   display: table-cell;
    padding-left: 5px;
 }
-.body404{
-    height: 100%;
-  margin: 0;
-}
 .div404 {
   height: 100%;
   background-position: center;
   background-size: cover;
-  position: relative;
+  position: absolute;
+  top:50%;
   color: white;
   font-size: 25px;
 }
@@ -199,6 +207,7 @@ overflow: hidden;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  color: white;
 }
 #submit{
   position: absolute;
@@ -214,6 +223,10 @@ overflow: hidden;
   width: 110px;
   border: none;
   padding: 6px;
+}
+#submit:focus {
+    box-shadow: 0 0 2pt 1pt black;
+    outline: none;
 }
 hr {
   margin: auto;

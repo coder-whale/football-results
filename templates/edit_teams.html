@@ -19,6 +19,27 @@
       <button id="submit" onclick="submit_teams()">Apply</button>
       <ul id="teamlist"></ul>
       <script>
+      document.addEventListener("click", (evt) => {
+        const teamlistEl = document.getElementById("teamlist");
+        const searchbarEl = document.getElementById("searchbar");
+        let targetEl = evt.target; // clicked element      
+        do {
+          if(targetEl == searchbarEl) {
+            // This is a click inside, does nothing, just return.
+            document.getElementById("teamlist").style.display='inline-block';
+            return;
+          }
+          if(targetEl.className=="teambutton2" && document.getElementById("teamlist").style.display!='none')
+          {
+          document.getElementById("teamlist").style.display='inline-block';
+            return;
+          }
+          // Go up the DOM
+          targetEl = targetEl.parentNode;
+        } while (targetEl);
+        // This is a click outside.      
+        document.getElementById("teamlist").style.display = 'none';
+      });
       function addteam(team)
       {
         var divnode = document.createElement("div");
@@ -41,10 +62,12 @@
         spannodeclose.onmouseover = 
         function() { 
          divnode.style.color = "#eb3434";
+         divnode.style.backgroundColor="#f78c81";
         };
         spannodeclose.onmouseout = 
         function() { 
          divnode.style.color = "white";
+         divnode.style.backgroundColor="#25275e";
         };
         let tempspannode=spannodeclose;
         tempspannode.onclick = function () {
@@ -95,6 +118,7 @@
                     console.log(newteam);
                     addteam(newteam);
                 }
+                document.getElementById("searchbar").value='';
                 };
                 if(filter.length>0)
                 document.getElementById("teamlist").appendChild(node);     // Append <li> to <ul> with id="myList"
@@ -109,7 +133,7 @@
         for (var i = 0; i < finbarteams.length; i++) 
         {
             let finbarteam = finbarteams[i];
-            finteams.push({"id":finbarteam.id,"name":finbarteam.childNodes[0].nodeValue});
+            finteams.push({"id":finbarteam.id,"name":finbarteam.childNodes[0].childNodes[0].nodeValue});
         }
         fetch(`${window.origin}/edit_teams/make_changes`, {
             method: "POST",
@@ -127,6 +151,7 @@
                 return;
             }
             response.json().then(function(data) {
+                console.log('yeehaw');
                 console.log(data);
                 window.location.href = "http://localhost:5000";
             });
