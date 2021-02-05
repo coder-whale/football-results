@@ -30,10 +30,12 @@ def update_fixtures(teamid):
         templist.append(row['goals']['away'])
         templist.append(row['fixture']['status']['short'])
         templist.append(row['teams']['home']['winner'])
+        templist.append(row['score']['penalty']['home'])
+        templist.append(row['score']['penalty']['away'])
         temptuple=tuple(templist)
         sqlinsertdata.append(temptuple)
     
-    sqlcmd="INSERT INTO fixtures(fixtureid,matchdate,timestamp,teamid,homeid,hometeam,awayid,awayteam,hometeamgoals,awayteamgoals,status,result) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sqlcmd="INSERT INTO fixtures(fixtureid,matchdate,timestamp,teamid,homeid,hometeam,awayid,awayteam,hometeamgoals,awayteamgoals,status,result,pengoalshome,pengoalsaway) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     cursor.executemany(sqlcmd,sqlinsertdata)
     conn.commit()
 
@@ -45,7 +47,7 @@ def update_time():
 def get_fixtures(idparam):
     update_time()
     global finishedmatches,upcomingmatches
-    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status IN (\'FT\',\'AET\') ORDER BY timestamp DESC limit 5;',(curctime,idparam))
+    cursor.execute('SELECT * FROM fixtures WHERE timestamp<%s AND teamid=%s AND status IN (\'FT\',\'AET\',\'PEN\') ORDER BY timestamp DESC limit 5;',(curctime,idparam))
     finishedmatches=list(cursor)
     cursor.execute('SELECT * FROM fixtures WHERE timestamp>%s AND teamid=%s ORDER BY timestamp;',(curctime,idparam))
     upcomingmatches=list(cursor)
@@ -60,12 +62,12 @@ def get_fixtures(idparam):
         tempdate = datetime.datetime.strptime(time.ctime(temp), "%a %b %d %H:%M:%S %Y")
         row['day']=tempdate.strftime('%a %d %b')
         row['time']=tempdate.strftime('%H:%M')
-    #live_fixtures()
+    live_fixtures()
     
 def live_fixtures():
     update_time()
     global ongoingmatches
-    cursor.execute('SELECT fixtureid FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
+    cursor.execute('SELECT fixtureid FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status NOT IN (\'FT\',\'AET\',\'PEN\') ;',(curctime,curctime))
     ongoingids=list(cursor)
     ongoingset=set([d['fixtureid'] for d in ongoingids])
     if(len(ongoingset)>0):
@@ -79,7 +81,9 @@ def live_fixtures():
                 goalsaway=row['goals']['away']
                 minutes=row['fixture']['status']['elapsed']
                 status=row['fixture']['status']['short']
-                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,minutes=%s,status=%s where fixtureid=%s;",(goalshome,goalsaway,minutes,status,row['fixture']['id']))
+                penhome=row['score']['penalty']['home']
+                penaway=row['score']['penalty']['away']
+                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,minutes=%s,status=%s,pengoalshome=%s,pengoalsaway=%s where fixtureid=%s;",(goalshome,goalsaway,minutes,status,penhome,penaway,row['fixture']['id']))
                 conn.commit()
                 ongoingset.remove(row['fixture']['id'])
         for s in ongoingset:
@@ -91,9 +95,11 @@ def live_fixtures():
                 goalshome=row['goals']['home']
                 goalsaway=row['goals']['away']
                 status=row['fixture']['status']['short']
-                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,status=%s where fixtureid=%s;",(goalshome,goalsaway,status,row['fixture']['id']))
+                penhome=row['score']['penalty']['home']
+                penaway=row['score']['penalty']['away']
+                cursor.execute("UPDATE fixtures SET hometeamgoals=%s,awayteamgoals=%s,status=%s where fixtureid=%s;",(goalshome,goalsaway,status,penhome,penaway,row['fixture']['id']))
                 conn.commit()
-    cursor.execute('SELECT * FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status!=\'FT\' ;',(curctime,curctime))
+    cursor.execute('SELECT * FROM fixtures WHERE %s-timestamp<10800 AND %s-timestamp>0 AND status NOT IN (\'FT\',\'AET\',\'PEN\') ;',(curctime,curctime))
     ongoingmatches=list(cursor)       
     
 app = Flask(__name__)

@@ -21,14 +21,13 @@
       {% else %}
        <div id="allfixtures">
       {% for row in fixtures %}
-      <div id="fixture">
+      <div class="fixture">
         <div class="homeside">
         <span class="homesidespan">{{row.hometeam}}</span>
         <span class="homesidespan"><img src={{"https://media.api-sports.io/football/teams/" ~ row.homeid ~ ".png"}} class="homelogo" alt="home" ></span>
         </div>
         <span class="scoreline">
-        {{row.hometeamgoals}}-{{row.awayteamgoals}}
-        {{row.minutes}}
+        {{row.hometeamgoals}}-{{row.awayteamgoals}} ({% if row.status == "HT"%}{{row.status}}{% else %}{{row.minutes}}{% endif %})
         </span>
         <div class="awayside">
         <span class="awaysidespan"><img src={{"https://media.api-sports.io/football/teams/" ~ row.awayid ~ ".png"}} class="awaylogo" alt="away" ></span>

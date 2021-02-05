@@ -44,10 +44,10 @@
         </div>
         <span class="scoreline">
         {% if row.status == "FT" or row.status == "PEN" or row.status == "AET"%}
-        {{row.hometeamgoals}}-{{row.awayteamgoals}}
+        {{row.hometeamgoals}}-{{row.awayteamgoals}} ({{row.status}}{% if row.status == "PEN"%} {{row.pengoalshome}}-{{row.pengoalsaway}}{% endif %})
         {% elif row.status == "TBD" %}
         TBD
-        {% else %}
+        {% elif row.status == "NS" %}
         {{row.time}}
         {% endif %}
         </span>
