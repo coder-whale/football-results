@@ -24,6 +24,11 @@
       <li class="option" style="width:30%"><a href=upcoming class="optionlink">Upcoming matches</a></li>
       <li class="option" style="width:10%"><a href=edit_teams class="optionlink">Edit teams</a></li>
       </ul>
+      {% if teams|length==0 %}
+      <div class="middle">
+      <h1>No teams to display</h1>
+      </div>
+      {% else %}
        <div id="teambar">
       {% for team in teams %}
       <div onclick=findpage(this) id={{team.id}} class="teambutton">
@@ -58,5 +63,6 @@
       </div>
       {% endfor %}
       </div>
+      {% endif %}
    </body>
 </html>

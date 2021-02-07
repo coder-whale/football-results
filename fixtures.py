@@ -142,7 +142,8 @@ with open(os.path.join(ROOT_DIR,'fixtures_data.json'),'r+') as f:
         f.seek(0)
         json.dump(data,f)
         f.truncate()
-currentteam=teamlist[0]['id']
+if len(teamlist)>0:
+    currentteam=teamlist[0]['id']
 finishedmatches=[]
 upcomingmatches=[]
 get_fixtures(currentteam)
@@ -159,9 +160,17 @@ def hello_world():
 def completed_page():
     global currentteam
     tempid=request.args.get('teamid')
-    if tempid is not None and tempid != currentteam:
-        get_fixtures(tempid)
-        currentteam=tempid
+    if tempid is not None and tempid != currentteam and len(teamids>0):
+        if str(tempid) in teamids:
+            get_fixtures(tempid)
+            currentteam=tempid
+        else:
+            currentteam=teamlist[0]['id']
+            get_fixtures(currentteam)
+    if tempid is None:
+        if str(currentteam) not in teamids and len(teamlist)>0:
+            currentteam=teamlist[0]['id']
+            get_fixtures(currentteam)
     return render_template('mainpage.html',fixtures = finishedmatches,teams=teamlist)
 
 @app.route('/ongoing')
@@ -173,7 +182,7 @@ def ongoing_page():
 def upcoming_page():
     global currentteam
     tempid=request.args.get('teamid')
-    if tempid is not None and tempid != currentteam:
+    if tempid is not None and tempid != currentteam and len(teamids)>0:
         if str(tempid) in teamids:
             get_fixtures(tempid)
             currentteam=tempid
@@ -181,7 +190,7 @@ def upcoming_page():
             currentteam=teamlist[0]['id']
             get_fixtures(currentteam)
     if tempid is None:
-        if str(currentteam) not in teamids:
+        if str(currentteam) not in teamids and len(teamlist)>0:
             currentteam=teamlist[0]['id']
             get_fixtures(currentteam)
     return render_template('mainpage.html',fixtures = upcomingmatches,teams=teamlist)
