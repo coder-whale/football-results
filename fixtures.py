@@ -1,3 +1,6 @@
+#USAGE:
+#Run this file to start the web app.
+
 from flask import Flask,jsonify,render_template,redirect,url_for,request,make_response
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
@@ -7,6 +10,7 @@ import os
 import datetime
 import time
 
+#Update the fixtures in the database for the specified team ID
 def update_fixtures(teamid):
     apiconn.request("GET","/fixtures?team="+str(teamid)+"&last=6",headers=headers)
     result1 = apiconn.getresponse()
@@ -40,10 +44,12 @@ def update_fixtures(teamid):
     conn.commit()
 
 curctime=time.ctime()
+#Updating time stored in 'curctime' variable to current time
 def update_time():
     global curctime
     curctime=time.time()
 
+#Get the fixture info for the given team ID
 def get_fixtures(idparam):
     update_time()
     global finishedmatches,upcomingmatches
@@ -63,7 +69,8 @@ def get_fixtures(idparam):
         row['day']=tempdate.strftime('%a %d %b')
         row['time']=tempdate.strftime('%H:%M')
     live_fixtures()
-    
+
+#Update scoreline of live fixtures if any
 def live_fixtures():
     update_time()
     global ongoingmatches
@@ -198,7 +205,8 @@ def upcoming_page():
 @app.route('/edit_teams')
 def edit_teams_page():
     return render_template('edit_teams.html',allteams=json.dumps(allteams),teams=json.dumps(teamlist))
-    
+
+#Page to process and apply all the changes made in the edit_teams page
 @app.route('/edit_teams/make_changes', methods=['POST'])
 def make_changes():
     global teamlist,teamids
