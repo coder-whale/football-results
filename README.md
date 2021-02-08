@@ -9,6 +9,7 @@ The [Flask](https://flask.palletsprojects.com/en/1.1.x/) web framework is used h
 ## Requirements
 
 MySQL Database - For storing the info of fixtures and teams  
+The file **api_key.txt** present in the main project folder needs to contain the API key provided by API-Football. Replace the line present with the key provided to you.  
 Required python libraries can be installed by running the following command in cmd from the project folder:
 
 ```
